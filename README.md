@@ -1,9 +1,8 @@
 # Persona do Projeto
 A Lucia tem um pequeno comércio e luta bravamente para mantê-lo! Porém, a Lucia tem problemas em registrar suas vendas!
-Já usou papel, planilhas e até mesmo outros sistemas complicados!\
-Será que nós da ZigMoney conseguiremos ajudar às várias Lucias espalhadas pelo nosso Brasil?
-Este é o nosso real foco e faremos o possível para alcançá-lo!\
-Que tal nos ajudar nesta empreitada?
+Já usou papel, planilhas e até mesmo outros sistemas complicados!
+Será que o SysPDV conseguirá ajudar às várias Lucias espalhadas pelo nosso Brasil?
+Este é o nosso foco e faremos o possível para alcançá-lo!
 
 # Módulos
 
