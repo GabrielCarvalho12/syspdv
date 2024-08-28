@@ -5,42 +5,66 @@ use PDO;
 use PDOException;
 
 /**
-* --------------------------------------------------------------------------
-* This class is used to make the connection with the database
-* --------------------------------------------------------------------------
-* @var $pdo : Object : Stored the instance of PDO
-*/
-
+ * --------------------------------------------------------------------------
+ * This class is used to make the connection with the database
+ * --------------------------------------------------------------------------
+ * @var $pdo : Object : Stores the instance of PDO
+ */
 class Native
 {
     private static $pdo;
 
+    /**
+     * Connects to the database using PDO
+     * 
+     * @return PDO
+     */
     public static function connect()
     {
-        if ( ! isset($pdo)) {
+        if (self::$pdo === null) {
             try {
+                $host = getenv('DB_HOST') ?: 'localhost';
+                $dbname = getenv('DB_DATABASE') ?: 'zig';
+                $username = getenv('DB_USERNAME') ?: 'root';
+                $password = getenv('DB_PASSWORD') ?: 'zig';
+
                 self::$pdo = new PDO(
-                    "mysql:" . "host=" . getenv('HOST_NAME') . ";" .
-                    "dbname=" . getenv('HOST_DBNAME'), getenv('HOST_USERNAME'), getenv('HOST_PASSWORD'),
-                    array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-                // exibe erro somente em diplay_errors=true
-                $errorType = getenv('APP_DISPLAY_ERRORS', false)==false? PDO::ERRMODE_SILENT: PDO::ERRMODE_WARNING;
+                    "mysql:host=$host;dbname=$dbname",
+                    $username,
+                    $password,
+                    array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
+                );
+
+                $errorType = getenv('APP_DISPLAY_ERRORS') === 'true' ? PDO::ERRMODE_WARNING : PDO::ERRMODE_SILENT;
                 self::$pdo->setAttribute(PDO::ATTR_ERRMODE, $errorType);
 
             } catch (PDOException $e) {
-                if ($e->getCode() == 2002) {
-                    echo "<b>Database configuration Error:</b> This Localhost not exist in this server";
-                    exit;
-                } elseif ($e->getCode() == 1049) {
-                    echo "<b>Database configuration Error:</b> This Database not exist in this server";
-                    exit;
-                } elseif ($e->getCode() == 1044) {
-                    echo "<b>Database configuration Error:</b> Database username not exist in this server";
-                    exit;
-                } elseif ($e->getCode() == 1045) {
-                    echo "<b>Database configuration Error:</b> Database Password are incorrect";
-                    exit;
+                // Handle specific PDO exceptions
+                $message = 'Database configuration Error: ';
+                switch ($e->getCode()) {
+                    case 2002:
+                        $message .= 'This localhost does not exist on this server.';
+                        break;
+                    case 1049:
+                        $message .= 'This database does not exist on this server.';
+                        break;
+                    case 1044:
+                        $message .= 'Database username does not exist on this server.';
+                        break;
+                    case 1045:
+                        $message .= 'Database password is incorrect.';
+                        break;
+                    default:
+                        $message .= 'Connection failed: ' . $e->getMessage();
+                        break;
                 }
+
+                // Log the error to a file or monitoring system instead of displaying it directly
+                error_log($message);
+
+                // Display a user-friendly message
+                echo "<b>Database connection error occurred. Please try again later.</b>";
+                exit;
             }
         }
 

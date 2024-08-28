@@ -133,8 +133,8 @@ $configPdv = $configPdv->configPdv(Session::get('idEmpresa'));
             <?php if (getenv('APPLICATION_NAME')): ?>
                 <?php echo getenv('APPLICATION_NAME'); ?>
             <?php else: ?>
-                <img style="width: 40%;" src="<?php echo BASEURL; ?>/public/imagem/perfil_usuarios/TWOG.png" alt=""><wbr>
-                <p style="">Solutions</p>
+                <img style="width: 30%;" src="<?php echo BASEURL; ?>/public/imagem/perfil_usuarios/ponto-de-venda.png" alt=""><wbr>
+                <p style="">Syspdv</p>
             <?php endif; ?>
 
           </span>
