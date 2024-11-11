@@ -41,7 +41,7 @@ class Usuario extends Model
             usuarios.id AS id, usuarios.nome,
             usuarios.email, usuarios.id_sexo,
             usuarios.created_at, usuarios.imagem,
-            usuarios.deleted_at,
+            usuarios.deleted_at, usuarios.status,
             sexos.descricao, perfis.descricao AS perfil
 
             FROM usuarios INNER JOIN sexos ON

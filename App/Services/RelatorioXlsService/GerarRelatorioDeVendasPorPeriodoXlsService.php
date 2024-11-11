@@ -39,7 +39,7 @@ class GerarRelatorioDeVendasPorPeriodoXlsService
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setCellValue('A1', "Relatório de vendas por período.{$this->periodo['de']} à {$this->periodo['ate']}");
+        $sheet->setCellValue('A1', "Relatório de pedidos por período.{$this->periodo['de']} à {$this->periodo['ate']}");
 
         $dados = [];
         $dados[] = [

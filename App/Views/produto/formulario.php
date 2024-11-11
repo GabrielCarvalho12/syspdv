@@ -49,7 +49,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="ativo">
-                            <small style="opacity:0.80">Mostrar este produto em vendas</small>
+                            <small style="opacity:0.80">Mostrar este produto em pedidos</small>
                             <input
                                 id="ativo"
                                 name="mostrar_em_vendas"

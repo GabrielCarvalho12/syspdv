@@ -63,8 +63,8 @@ use System\Session\Session;
                         <td><?php echo $usuario->nome; ?></td>
                         <td class="hidden-when-mobile"><?php echo $usuario->email; ?></td>
                         <td><?php echo $usuario->perfil; ?></td>
-                        <td class="<?php echo (is_null($usuario->deleted_at)) ? 'ativo' : 'desativado'; ?>">
-                            <?php echo (is_null($usuario->deleted_at)) ? 'Sim' : 'Não'; ?>
+                        <td class="<?php echo ($usuario->status == 1) ? 'ativo' : 'desativado'; ?>">
+                            <?php echo ($usuario->status == 1) ? 'Sim' : 'Não'; ?>
                         </td>
                         <td style="text-align:right">
 
@@ -81,7 +81,7 @@ use System\Session\Session;
                                         <i class="fas fa-edit"></i> Editar
                                     </button>
 
-                                    <?php if (is_null($usuario->deleted_at)): ?>
+                                    <?php if ($usuario->status == 1): ?>
 
                                         <button class="dropdown-item" href="#"
                                                 onclick="modalAtivarEdesativarUsuario('<?php echo $usuario->id; ?>', '<?php echo $usuario->nome; ?>', 'desativar')">

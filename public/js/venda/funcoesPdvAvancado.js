@@ -54,7 +54,7 @@ function obterProdutosDaMesa() {
     $.get(rota, function (data, status) {
         var t = "";
         var produtos = JSON.parse(data);
-
+        
         if (produtos.length != 0) {
             $.each(produtos, function (index, value) {
                 t += "<tr id='id-tr-" + value.id + "'>";
@@ -80,34 +80,49 @@ function obterProdutosDaMesa() {
 }
 
 function VerificarProdutosDaMesa(id) {
-
     var rota = getDomain() + "/pdvDiferencial/obterProdutosDaMesa";
     $.get(rota, function (data, status) {
-        var t = "";
         var produtos = JSON.parse(data);
 
         $.each(produtos, function (index, value) {
             if (value.id == id) {
+                let produtoInput = document.getElementById("input-" + id);
+                
+                // Verifica se o campo de quantidade existe no DOM
+                if (produtoInput) {
+                    // Incrementa a quantidade
+                    let quantidade = ++produtoInput.value;
 
-                let produto = document.getElementById("input-" + id);
-                quantidade = ++produto.value;
+                    if (quantidade > 0) {
+                        var rotaAlterar = getDomain() + "/pdvDiferencial/alterarAquantidadeDeUmProdutoNaMesa/" + id + "/" + quantidade;
+                        
+                        $.get(rotaAlterar, function (data, status) {
+                            var obj = JSON.parse(data);
 
-                if (quantidade > 0) {
-                    var rota = getDomain() + "/pdvDiferencial/alterarAquantidadeDeUmProdutoNaMesa/" + id + "/" + quantidade;
-                    $.get(rota, function (data, status) {
-                        var obj = JSON.parse(data);
+                            // Verifica a quantidade no estoque
+                            if (quantidade > obj.unidades) {
+                                var legendaUnidade = (obj.unidades > 1) ? 'unidades' : 'unidade';
+                                modalValidacao('Aplicando', 'Este Produto tem apenas ' + obj.unidades + ' ' + legendaUnidade + ' em estoque.');
+                                quantidade = obj.unidades;
+                                
+                                // Atualiza a quantidade no input para o máximo permitido
+                                produtoInput.value = quantidade;
+                            }
 
-                        if (quantidade > obj.unidades) {
-                            var legendaUnidade = (obj.unidades > 1) ? 'unidades' : 'unidade';
-                            modalValidacao('Aplicando', 'Este Produto tem apenas ' + obj.unidades + ' ' + legendaUnidade + ' em estoque.');
-                            quantidade = obj.unidades;
-                        }
+                            // Atualiza o total do produto
+                            let totalCell = document.querySelector(".pegarTotal");
+                            if (totalCell) {
+                                totalCell.textContent = real(value.preco * quantidade);
+                            }
 
-                        $(".tabela-de-produto tbody").empty();
-                        obterValorTotalDosProdutosNaMesa();
-                        calcularTroco();
-                        setTimeout(modalValidacaoClose, 1000);
-                    });
+                            // Recalcula o valor total dos produtos na mesa e o troco
+                            obterValorTotalDosProdutosNaMesa();
+                            calcularTroco();
+                            setTimeout(modalValidacaoClose, 1000);
+                        });
+                    }
+                } else {
+                    console.warn("Produto com ID 'input-" + id + "' não encontrado no DOM.");
                 }
             }
         });
@@ -121,7 +136,6 @@ function obterOultimoProdutoColocadoNaMesa() {
     $.get(rota, function (data, status) {
         var t = "";
         var value = JSON.parse(data);
-
         if ($("#id-tr-" + value.id).length == 0) {
             t += "<tr id='id-tr-" + value.id + "'>";
             if (value.imagem == null || value.imagem == '') {
@@ -132,7 +146,7 @@ function obterOultimoProdutoColocadoNaMesa() {
             t += "<td>" + value.produto + "</td>";
             t += "<td class='hidden-when-mobile'>" + real(value.preco) + "</td>";
             t += "<td>" + '<input id="input-' + value.id + '" type="number" class="campo-quantidade" value="' + value.quantidade + '" onchange="alterarAquantidadeDeUmProdutoNaMesa(' + value.id + ', this.value, $(this))">' + "</td>";
-            t += "<td>" + real(value.total) + "</td>";
+            t += "<td class='pegarTotal'>" + real(value.total) + "</td>";
             t += "<td>" + '<button class="btn-sm btn-link" onclick="retirarProdutoDaMesa(' + value.id + ', this)"><i class="fas fa-times" style="color:#cc0000;font-size:18px"></i></button>' + "</td>";
             t += "</tr>";
 
@@ -220,13 +234,6 @@ function saveVendasViaSession(token) {
         return false;
     }
 
-    // verifica se é boleto e preencheu a data de compensacao
-    if (meioPagamento == 4 && dataCompensacao == "") {
-        modalValidacao('Algo deu errado', 'Você precisa adiciona a data de compensação do boleto!');
-        setTimeout(modalValidacaoClose, 2000);
-        return;
-    }
-
     modalValidacao('Salvando', 'Processando...');
 
     new Promise(function (resolve, reject) {
@@ -254,15 +261,13 @@ function saveVendasViaSession(token) {
                     verificaSeTemProdutosNaMesa(1);
                     obterValorTotalDosProdutosNaMesa();
                     reiniciaElementosDePagamento();
-                    modalValidacao('Venda', 'Venda realizada com Sucesso!');
+                    pesquisarProdutoPorNome(false);
+                    imprimirPedido();
+                    modalValidacao('Venda', 'Pedido realizada com sucesso!');
 
                 }
             })
         })
-        .finally(function () {
-            setTimeout(modalValidacaoClose, 1000);
-        })
-    setTimeout(function () { location.reload(); }, 2500);
 }
 
 /*Se não tiver podutos selecionados, mostra uma mensagem*/
@@ -300,14 +305,6 @@ function handleAoMudarMeioDePagamento() {
         $("#div-troco").hide('fast');
         $("#button-confirmar-venda").prop('disabled', false);
     }
-
-    if (meiosDePagamento !== 4) {
-        dataCompensacao.classList.remove("visivel");
-        dataCompensacao.value = "";
-        return;
-    }
-
-    dataCompensacao.classList.add("visivel");
 }
 
 function calcularTroco() {
@@ -350,3 +347,88 @@ function reiniciaElementosDePagamento() {
 }
 
 handleAoMudarMeioDePagamento();
+
+function abrirCaixa(token) {
+    // Desabilita o botão para evitar cliques múltiplos
+    $('#btn-abrir-caixa').prop('disabled', true);
+
+    var rota = getDomain() + "/pdvDiferencial/abrirCaixa";
+
+    $.post(rota, {
+            '_token': token
+        }, function (result) {
+        var caixa = JSON.parse(result);
+            if (caixa.status == true) {          
+                carregarStatusCaixa()
+                modalValidacao('Caixa', 'Caixa aberto com sucesso!');           
+            } else {
+                modalValidacao('Caixa', 'Já existe um caixa aberto, para abrir um novo feche o anterior.');
+            }
+        $('#btn-abrir-caixa').prop('disabled', false);
+    })
+}
+
+function carregarStatusCaixa() {
+    var rota = getDomain() + "/pdvDiferencial/verificarStatusCaixa";
+
+    $.get(rota, function (result) {
+        var response = JSON.parse(result);
+            if (response) {
+                let statusCaixa = response.status;
+                atualizarLabelStatusCaixa(statusCaixa);
+            } else {
+                modalValidacao('Caixa', 'Erro ao carregar o status do caixa.');
+            }
+    })
+}
+
+function atualizarLabelStatusCaixa(status) {
+    let statusLabel = $('#status-caixa');
+    if (status === 'aberto') {
+        statusLabel.text('Caixa Aberto');
+        statusLabel.removeClass('badge-danger').addClass('badge-success');
+    } else {
+        statusLabel.text('Caixa Fechado');
+        statusLabel.removeClass('badge-success').addClass('badge-danger');
+    }
+}
+
+function confirmarFechamentoCaixa(token) {
+    var rota = getDomain() + "/pdvDiferencial/fecharCaixa";
+
+    $.post(rota, {
+            '_token': token
+        }, function (result) {
+        $('#modalConfirmacaoFechamento').modal('hide'); 
+        var caixa = JSON.parse(result);
+            if (caixa.status == true) {                    
+                carregarStatusCaixa()
+                modalValidacao('Caixa', 'Caixa fechado com sucesso!');           
+            } else {
+                modalValidacao('Caixa', 'O caixa já está fechado.');
+            }
+    })
+}
+
+function pesquisarProdutoPorNome(nome) {
+    $("#carregar-produtos").html("<center><h3>Carregando...</h3></center>");
+    var url = getDomain() + "/pesquisarProdutoPorNome";
+    url += nome? ("/"+in64(nome)) : "";
+    $("#carregar-produtos").load(url);
+}
+
+function fecharCaixa() {
+    $('#modalConfirmacaoFechamento').modal('show');
+}
+
+function imprimirPedido() {
+    var rota = getDomain() + "/relatorio/gerarPedidoDaUltimaVenda/"
+    $.get(rota, function (result) {
+        var response = JSON.parse(result);
+            if (response) {
+                return true;
+            } else {
+                return false;
+            }
+    })
+}

@@ -38,7 +38,7 @@ class UsuarioController extends Controller
         $this->idUsuarioLogado = Session::get('idUsuario');
         $this->idPerfilUsuarioLogado = session::get('idPerfil');
 
-        $path = filter_var(getenv('SHARED_HOST'), FILTER_VALIDATE_BOOLEAN) ? 'imagem/perfil_usuarios/' : 'public/imagem/perfil_usuarios/';
+        $path = /* filter_var(getenv('SHARED_HOST'), FILTER_VALIDATE_BOOLEAN) ?  */'imagem/perfil_usuarios/' /* : 'public/imagem/perfil_usuarios/' */;
         $this->diretorioImagemUsuarioPadrao = $path;
 
         $logged = new Logged();
@@ -79,7 +79,7 @@ class UsuarioController extends Controller
                     return $this->get->redirectTo("usuario");
                 }
 
-                $dados['imagem'] = filter_var(getenv('SHARED_HOST'), FILTER_VALIDATE_BOOLEAN) ? "public/{$retornoImagem}" : $retornoImagem;
+                $dados['imagem'] = /* filter_var(getenv('SHARED_HOST'), FILTER_VALIDATE_BOOLEAN) ? */ "public/{$retornoImagem}" /* : $retornoImagem */;
             }
 
             try {
@@ -124,7 +124,7 @@ class UsuarioController extends Controller
                     return $this->get->redirectTo("usuario");
                 }
 
-                $dados['imagem'] = filter_var(getenv('SHARED_HOST'), FILTER_VALIDATE_BOOLEAN) ? "public/{$retornoImagem}" : $retornoImagem;
+                $dados['imagem'] = /* filter_var(getenv('SHARED_HOST'), FILTER_VALIDATE_BOOLEAN) ? */ "public/{$retornoImagem}" /* : $retornoImagem */;
             }
 
             if (!is_null($this->post->data()->password)) {

@@ -56,7 +56,7 @@
                         <label for="periodo_de">Período de</label>
                         <input type="date" class="form-control busca-sem-codigo" name="de" id="periodo_de"
                                value="<?php echo date('Y') . '-' . date('m') . '-' . '01' ?>">
-                        <small style="color:#999999">Primeira Venda: <?php echo ( ! is_null($periodoDisponivelParaConsulta->primeiraVenda) ? $periodoDisponivelParaConsulta->primeiraVenda : 'Não realizada!');?></small>
+                        <small style="color:#999999">Primeiro Pedido: <?php echo ( ! is_null($periodoDisponivelParaConsulta->primeiraVenda) ? $periodoDisponivelParaConsulta->primeiraVenda : 'Não realizada!');?></small>
                     </div>
                 </div>
 
@@ -65,19 +65,19 @@
                         <label for="periodo_ate">Período até</label>
                         <input type="date" class="form-control busca-sem-codigo" name="ate" id="periodo_ate"
                                value="<?php echo date('Y-m-d') ?>">
-                        <small style="color:#999999">Ultima Venda:
+                        <small style="color:#999999">Ultimo Pedido:
                         <?php echo ( ! is_null($periodoDisponivelParaConsulta->ultimaVenda) ? $periodoDisponivelParaConsulta->ultimaVenda : 'Não realizada!');?></small>
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="id_usuario">Vendedor *</label>
-                        <select class="form-control js-example-basic-single busca-sem-codigo" name="id_usuario" id="id_usuario">
+                        <label for="id_caixa">Caixas</label>
+                        <select class="form-control js-example-basic-single busca-sem-codigo" name="id_caixa" id="id_caixa">
                             <option value="todos">Todos</option>
-                            <?php foreach ($usuarios as $usuario) : ?>
-                                <option value="<?php echo $usuario->id; ?>">
-                                    <?php echo "<img class='img-flag' src='" . $usuario->imagem . "'>" . $usuario->nome; ?>
+                            <?php foreach ($caixas as $caixa) : ?>
+                                <option value="<?php echo $caixa->id; ?>">
+                                    <?php echo $caixa->id; ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -125,11 +125,19 @@
         return false;
     });
 
-    vendas();
-
     function vendas() {
         $('#div-tabela-vendas').html('<br><center><h3>Carregando...</h3></center>');
         var rota = $('#form').attr('action');
+        $.post(rota, $('#form').serialize(), function (resultado) {
+            $('#div-tabela-vendas').empty();
+            $('#div-tabela-vendas').append(resultado);
+        });
+    }
+    
+    vendasCaixa();
+
+    function vendasCaixa() {
+        var rota = "<?php echo BASEURL; ?>/relatorio/vendasCaixaChamadaAjax";
         $.post(rota, $('#form').serialize(), function (resultado) {
             $('#div-tabela-vendas').empty();
             $('#div-tabela-vendas').append(resultado);
@@ -140,7 +148,7 @@
         var rota = "<?php echo BASEURL; ?>/relatorio/gerarXls";
         rota += "/" + $("#periodo_de").val();
         rota += "/" + $("#periodo_ate").val();
-        rota += "/" + $("#id_usuario").val();
+        rota += "/" + $("#id_caixa").val();
 
         window.location.href = rota;
     }
@@ -149,7 +157,7 @@
         var rota = "<?php echo BASEURL; ?>/relatorio/gerarPDF";
         rota += "/" + $("#periodo_de").val();
         rota += "/" + $("#periodo_ate").val();
-        rota += "/" + $("#id_usuario").val();
+        rota += "/" + $("#id_caixa").val();
 
         window.location.href = rota;
     }

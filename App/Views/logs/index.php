@@ -27,8 +27,11 @@
             <?php foreach ($logs as $log) : ?>
                 <tr>
                     <td>
-                        <img class="imagem-perfil" src="<?php echo BASEURL . '/' . $log->usuario_imagem; ?>"
-                             title="<?php echo $log->usuario_nome; ?>">
+                        <?php if ($log->usuario_imagem != false): ?>
+                            <img class="imagem-perfil" src="<?php echo BASEURL . '/' . $log->usuario_imagem; ?>" title="<?php echo $log->usuario_nome; ?>">
+                        <?php else: ?>
+                            <i class="fas fa-user" style="font-size:30px;"></i>
+                        <?php endif; ?>
                     </td>
                     <td><?php echo $log->empresa_nome; ?></td>
                     <td><?php echo $log->usuario_nome; ?></td>

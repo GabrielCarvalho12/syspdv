@@ -55,7 +55,7 @@
                     </div>
                     <div class="col-7 col-md-8">
                         <div class="numbers">
-                            <p class="card-category" style="font-size:12px">Vendas deste mês</p>
+                            <p class="card-category" style="font-size:12px">Pedidos deste mês</p>
                             <p class="card-title" style="font-size:15px">
                                 R$ <?php echo real($faturamentoDeVandasNoMes); ?> <br>
                                 <small style="font-size:11px;opacity:0.40">
@@ -87,7 +87,7 @@
                     </div>
                     <div class="col-7 col-md-8">
                         <div class="numbers">
-                            <p class="card-category" style="font-size:12px">Vendas do dia</p>
+                            <p class="card-category" style="font-size:12px">Pedidos do dia</p>
                             <p class="card-title" style="font-size:15px">
                                 R$ <?php echo real($faturamentoDeVandasNoDia); ?> <br>
                                 <small style="font-size:11px;opacity:0.40">
@@ -171,7 +171,7 @@
         <div class="card card-stats">
             <div class="card-body">
                 <center>
-                    Vendas por dia.
+                    Pedidos deste mês por dia.
                     <small style="opacity:0.70">Ultimos 30 dias</small>
                 </center>
                 <canvas class="grafico" id="grafi-vendas-por-dia" width="400" height="185"></canvas>
@@ -190,7 +190,7 @@
         <div class="card card-stats">
             <div class="card-body">
                 <center>
-                    Vendas por dia.
+                    Pedidos por dia.
                     <small style="opacity:0.70">Ultimos 30 dias</small>
                 </center>
                 <canvas class="grafico" id="grafi-valor-vendas-por-dia" width="400" height="185"></canvas>
@@ -288,7 +288,7 @@
         <div class="card card-stats">
             <div class="card-body totalVendasPorUsuariosNoMes">
                 <center>
-                    Vendas por vendedores.
+                    Pedidos por vendedores.
                     <small style="opacity:0.70">
                         Mês de <?php echo mesesPorExtensoEnumeroDoMes(date('m')); ?>
                     </small>
@@ -303,7 +303,6 @@
                             <th>Dinheiro</th>
                             <th>Crédito</th>
                             <th>Débito</th>
-                            <th>Boleto</th>
                             <th>Pix</th>
                         </tr>
                         </thead>
@@ -343,12 +342,6 @@
                                 <?php else: ?>
                                     <td><small>Não consta</small></td>
                                 <?php endif; ?>
-
-                                <?php if (!is_null($venda->Pix)): ?>
-                                    <td>R$ <?php echo real($venda->Pix); ?></td>
-                                <?php else: ?>
-                                    <td><small>Não consta</small></td>
-                                <?php endif; ?>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
@@ -378,7 +371,7 @@
         <div class="card card-stats">
             <div class="card-body totalVendasPorUsuariosNoMes">
                 <center>
-                    Vendas por mês em
+                    Pedidos por mês em
                     <small style="opacity:0.70">
                         <?php echo date('Y');?>
                     </small>

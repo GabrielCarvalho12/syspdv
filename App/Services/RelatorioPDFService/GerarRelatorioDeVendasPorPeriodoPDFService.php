@@ -55,7 +55,7 @@ class GerarRelatorioDeVendasPorPeriodoPDFService
 
     public function gerarPDF($vendas)
     {
-        $titulo = "Relatório de vendas por período. {$this->periodo['de']} à {$this->periodo['ate']}";
+        $titulo = "Relatório de pedidos por período. {$this->periodo['de']} à {$this->periodo['ate']}";
         $head = [
             '#',
             'Usuário',

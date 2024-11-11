@@ -26,7 +26,7 @@ class Native
                 $host = getenv('DB_HOST') ?: 'localhost';
                 $dbname = getenv('DB_DATABASE') ?: 'zig';
                 $username = getenv('DB_USERNAME') ?: 'root';
-                $password = getenv('DB_PASSWORD') ?: 'zig';
+                $password = getenv('DB_PASSWORD') ?: '';
 
                 self::$pdo = new PDO(
                     "mysql:host=$host;dbname=$dbname",

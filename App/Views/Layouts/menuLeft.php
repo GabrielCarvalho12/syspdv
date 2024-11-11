@@ -12,25 +12,31 @@ use System\Session\Session;
             <a href="<?php echo BASEURL; ?>/home"
                class="<?php currentRouteFromMenu('home', 'inicioBorder'); ?>">
                 <i class="fas fa-tachometer-alt"></i>
-                <p>Inicio</p>
+                <p>Dashboard</p>
             </a>
         </li>
 
+        
         <!--Modulo PDV Padrão e Diferencial-->
         <li class="">
+            <a href="<?php echo BASEURL; ?>/pdvDiferencial"
+               class="<?php currentRouteFromMenu('pdvDiferencial', 'pdvBorder'); ?>">
+                <i class="fas fa-cart-arrow-down"></i>
+                <p>Pedidos</p>
+            </a>
             <!--Modulo Relatórios-->
-            <!-- <?php if ($configPdv->id_tipo_pdv == 1): ?>
-                <a href="<?php echo BASEURL; ?>/pdvPadrao"
+            <!-- <?php if ($configPdv->id_tipo_pdv == 1): ?> -->
+                <!-- <a href="<?php echo BASEURL; ?>/pdvPadrao"
                    class="<?php currentRouteFromMenu('pdvPadrao', 'pdvBorder'); ?>">
                     <i class="fas fa-cart-arrow-down"></i>
                     <p>Vendas <small style="float:right;opacity:0.50">Padrão</small></p>
-                </a>
-            <?php elseif ($configPdv->id_tipo_pdv == 2): ?> -->
-                <a href="<?php echo BASEURL; ?>/pdvDiferencial"
+                </a> -->
+            <!-- <?php elseif ($configPdv->id_tipo_pdv == 2): ?> -->
+                <!-- <a href="<?php echo BASEURL; ?>/pdvDiferencial"
                    class="<?php currentRouteFromMenu('pdvDiferencial', 'pdvBorder'); ?>">
                     <i class="fas fa-cart-arrow-down"></i>
-                    <p>Vendas <!-- <small style="float:right;opacity:0.50">Diferencial</small> --></p>
-                </a>
+                    <p>Vendas <small style="float:right;opacity:0.50">Diferencial</small> </p>
+                </a> -->
             <!-- <?php endif; ?> -->
         </li>
 
@@ -69,7 +75,7 @@ use System\Session\Session;
                    class="<?php currentRouteFromMenu('relatorio', 'relatorioBorder'); ?>
                     <?php currentRouteFromMenu('relatorio/vendasPorPeriodo', 'relatorioBorder'); ?>">
                     <i class="fas fa-file-contract"></i>
-                    <p>Log de Vendas</p>
+                    <p>Relatório de Pedidos</p>
                 </a>
             </li>
         <?php endif; ?>

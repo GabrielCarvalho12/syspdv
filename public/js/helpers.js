@@ -72,6 +72,9 @@ function modalValidacao(title = false, mensagem) {
         $("#modal-validacao .modal-title").text(title);
         $("#modal-validacao #modal-body-content").html("<center><h3>" + mensagem + "</center></h3>");
         $("#modal-validacao").modal({backdrop: 'static'});
+        setTimeout(function() {
+            $('#modal-validacao').modal('hide');
+        }, 3000);
     });
 }
 

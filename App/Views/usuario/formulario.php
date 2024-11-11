@@ -85,7 +85,7 @@
                 <label for="imagem">Escolher Imagem de Perfil</label>
                 <input type="file" class="form-control" name="imagem" id="imagem"> <br>
                 <?php if (isset($usuario->id)) : ?>
-                    <img src="<?php echo $usuario->imagem; ?>" class="perfil">
+                    <img src="<?php echo BASEURL . '/' . $usuario->imagem; ?>" class="perfil">
                 <?php else : ?>
                     <i class="fas fa-user" style="font-size:40px"></i>
                 <?php endif; ?>

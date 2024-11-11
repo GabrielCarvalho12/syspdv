@@ -36,7 +36,9 @@ $route->get('relatorio/gerarXls/{de}/{ate}/{opcao?}', 'RelatorioController@gerar
 $route->get('relatorio/gerarPDF/{de}/{ate}/{opcao?}', 'RelatorioController@gerarPDF');
 $route->get('desativarVenda/{idVenda}', 'PdvPadraoController@desativarVenda');
 $route->get('relatorio/itensDaVenda/{codigo}', 'RelatorioController@itensDaVendaChamadaAjax');
-$route->get('relatorio/gerarPdfDeUmaVenda/{codigo}', 'RelatorioController@gerarPdfDeUmaVenda');
+$route->get('relatorio/gerarPedidoDeUmaVenda/{codigo}', 'RelatorioController@gerarPedidoDeUmaVenda');
+$route->get('relatorio/gerarPedidoDaUltimaVenda', 'RelatorioController@gerarPedidoDaUltimaVenda');
+$route->post('relatorio/vendasCaixaChamadaAjax', 'RelatorioController@vendasCaixaChamadaAjax');
 
 # ----- ProdutoController --------------------------------
 $route->get('produto', 'ProdutoController@index');
@@ -77,6 +79,10 @@ $route->get('pdvDiferencial/obterValorTotalDosProdutosNaMesa',
 
 $route->get('pdvDiferencial/calcularTroco/{valorRecebido}',
     'PdvDiferencialController@calcularTroco');
+
+$route->post('pdvDiferencial/abrirCaixa', 'PdvDiferencialController@abrirCaixa');
+$route->post('pdvDiferencial/fecharCaixa', 'PdvDiferencialController@fecharCaixa');
+$route->get('pdvDiferencial/verificarStatusCaixa', 'PdvDiferencialController@verificarStatusCaixa');
 
 # ----- ClienteController --------------------------------
 $route->get('cliente', 'ClienteController@index');

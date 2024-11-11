@@ -13,6 +13,8 @@ use System\Controller\Controller;
 use System\Get\Get;
 use System\Post\Post;
 use System\Session\Session;
+use App\Models\Caixa;
+use Exception;
 
 class PdvDiferencialController extends Controller
 {
@@ -69,11 +71,6 @@ class PdvDiferencialController extends Controller
         $meioDePagamento = $this->post->data()->id_meio_pagamento;
         $dataCompensacao = '0000-00-00';
 
-        # só adiciona caso seja um boleto
-        if ($meioDePagamento == 4) {
-            $dataCompensacao = $this->post->data()->data_compensacao;
-        }
-
         /**
          * Gera um código unico de venda que será usado em todos os registros desse Loop
         */
@@ -81,6 +78,7 @@ class PdvDiferencialController extends Controller
 
         $valorRecebido = formataValorMoedaParaGravacao($this->post->data()->valor_recebido);
         $troco = formataValorMoedaParaGravacao($this->post->data()->troco);
+        $caixaAberto = $this->caixaAberto();
 
         foreach ($_SESSION['venda'] as $produto) {
             $dados = [
@@ -92,7 +90,8 @@ class PdvDiferencialController extends Controller
                 'preco' => $produto['preco'],
                 'quantidade' => $produto['quantidade'],
                 'valor' => $produto['total'],
-                'codigo_venda' => $codigoVenda
+                'codigo_venda' => $codigoVenda,
+                'caixa_id' => $caixaAberto->id
             ];
 
             if ( ! empty($valorRecebido) && ! empty($troco)) {
@@ -186,7 +185,6 @@ class PdvDiferencialController extends Controller
     public function pesquisarProdutoPorNome($nome = false)
     {
         $nome = utf8_encode(out64($nome));
-
         $produto = new Produto();
         $produtos = $produto->produtosNoPdv($this->idEmpresa, $nome);
 
@@ -201,5 +199,56 @@ class PdvDiferencialController extends Controller
         $produtos = $produto->produtosNoPdvFiltrarPorCodigoDeBarra($this->idEmpresa, $codigo);
 
         $this->view('pdv/produtosAvenda', null, compact('produtos'));
+    }
+
+    public function abrirCaixa()
+    {
+        $caixa = new Caixa();
+        try {
+            $result = $caixa->abrirCaixa($this->idUsuario);
+
+            if ($result) {
+                echo json_encode(['status' => true]);
+            } else {
+                echo json_encode(['status' => false]);
+            }
+            
+        } catch (Exception $e) {
+            echo json_encode(['error' => $e]);
+        }      
+    }
+
+    public function fecharCaixa()
+    {
+        $caixa = new Caixa();
+        try {
+            $caixa = $caixa->fecharCaixa($this->idUsuario);
+
+            if ($caixa) {
+                echo json_encode(['status' => true]);
+            } else {
+                echo json_encode(['status' => false]);
+            }
+            
+        } catch (Exception $e) {
+            echo json_encode(['error' => $e]);
+        }      
+    }
+
+    public function verificarStatusCaixa()
+    {
+        $caixa = new Caixa();
+        $result = $caixa->verificarStatusCaixa();
+
+        $status = (isset($result->status) && $result->status) ? $result->status : 'fechado';
+
+        echo json_encode(['status' => $status]);
+    }
+
+    public function caixaAberto()
+    {
+        $caixa = new Caixa();
+        $result = $caixa->caixaAberto();
+        return $result;
     }
 }

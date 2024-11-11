@@ -151,7 +151,48 @@
         border-radius:10px;
         box-shadow:#deddd9 1px 2px 10px;
     }
+    /* Estilizando os botões de abrir e fechar caixa */
+    #btn-abrir-caixa {
+        float: right;
+        margin-left: 10px;
+    }
+
+    #btn-fechar-caixa {
+        float: right;
+    }
+
+    /* Garantindo que os botões fiquem alinhados no mobile */
+    @media (max-width: 600px) {
+        #btn-abrir-caixa, #btn-fechar-caixa {
+            width: 100%;
+            margin-top: 10px;
+        }
+    }
+
+    #status-caixa {
+        margin-top: 10px;
+        font-size: 16px;
+        padding: 10px;
+    }
 </style>
+
+<!-- Botões para abrir e fechar o caixa e status do caixa -->
+<div class="row mb-3">
+    <div class="col-auto mr-auto"> 
+        <span id="status-caixa" class="badge badge-secondary">
+        </span>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-success" id="btn-abrir-caixa" onclick="abrirCaixa('<?php echo TOKEN; ?>')">
+            <i class="fas fa-unlock"></i> Abrir Caixa
+        </button>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-danger" id="btn-fechar-caixa" onclick="fecharCaixa()" data-toggle="modal" data-target="#modalConfirmacaoFechamento">
+            <i class="fas fa-lock"></i> Fechar Caixa
+        </button>
+    </div>
+</div>
 
 <!--Caixa de pesquisa-->
 <div class="row">
@@ -183,7 +224,7 @@
         </div>
     </div>
 
-    <div class="card col-lg-4 content-div div-realizar-pagamento" style="">
+    <div class="card col-lg-4 content-div div-realizar-pagamento">
         <div class="card-body div-card-body-realizar-pagamento">
 
             <span>Total</span> <br>
@@ -212,11 +253,6 @@
             <div id="div-troco" style="display:none">
                 Troco <br>
                 <input type="text" class="form-control campo-moeda" id="input_troco" readonly placeholder="R$ 00,00">
-            </div>
-
-            <div class="form-group" id="data-compensacao">
-                <label for="id_meio_pagamento">Data de compensacao</label>
-                <input type="date" class="form-control" id="data_compensacao_boleto" name="data_compensacao_boleto">
             </div>
 
             <button class="btn btn-sm btn-success btn-block" id="button-confirmar-venda" onclick="saveVendasViaSession('<?php echo TOKEN; ?>')">
@@ -254,7 +290,26 @@
         </div>
     </div>
 
-
+    <!-- Modal de Confirmação para Fechar o Caixa -->
+    <div class="modal fade" id="modalConfirmacaoFechamento" tabindex="-1" role="dialog" aria-labelledby="modalLabelFechamento" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="modalLabelFechamento">Confirmar Fechamento do Caixa</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            Tem certeza que deseja fechar o caixa?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-danger" onclick="confirmarFechamentoCaixa('<?php echo TOKEN; ?>')">Confirmar</button>
+        </div>
+        </div>
+    </div>
+    </div>
 
 </div><!--end row-->
 
@@ -271,10 +326,15 @@
         $("#carregar-produtos").load(url);
     }
 
-    function pesquisarProdutoPorCodigoDeBarras(codigo) {
+    function pesquisarProdutoPorCodigoDeBarras(codigo) {      
         $("#carregar-produtos").html("<center><h3>Carregando...</h3></center>");
         let url = "<?php echo BASEURL; ?>/pesquisarProdutoPorCodigoDeBarra";
         url += codigo? ("/"+in64(codigo)) : "";
         $("#carregar-produtos").load(url);
-    }
+    }   
+
+    $(document).ready(function() {
+        carregarStatusCaixa();
+    });
+    
 </script>

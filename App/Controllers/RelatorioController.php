@@ -7,6 +7,7 @@ use App\Repositories\RelatorioVendasPorPeriodoRepository;
 use App\Rules\Logged;
 use App\Services\Usuarios\BuscaUsuariosService;
 use App\Services\RelatorioPDFService\RelatorioPdfDeUmaVenda;
+use App\Services\RelatorioPDFService\ImprimirPedido;
 use DateTime;
 use System\Controller\Controller;
 use System\Get\Get;
@@ -49,12 +50,42 @@ class RelatorioController extends Controller
 
         $relatorioVendas = new RelatorioVendasPorPeriodoRepository();
         $periodoDisponivelParaConsulta = $relatorioVendas->periodoDisponivelParaConsulta($this->idEmpresa);
+        $caixas = $relatorioVendas->caixas();
 
         $this->view('relatorio/vendasPorPeriodo/index', $this->layout,
         compact(
             'usuarios',
-            'periodoDisponivelParaConsulta'
+            'periodoDisponivelParaConsulta',
+            'caixas'
         ));
+    }
+
+    public function vendasCaixaChamadaAjax()
+    {
+        $relatorioVendas = new RelatorioVendasPorPeriodoRepository();
+        $vendas = [];
+
+        if ($this->post->hasPost()) {
+
+            $vendas = $relatorioVendas->agrupamentoDeVendasPorCaixa(
+                $this->idEmpresa
+            );
+
+            $meiosDePagamento = $relatorioVendas->totalVendidoCaixaPorMeioDePagamento(
+                $this->idEmpresa
+            );
+
+            $totalDasVendas = $relatorioVendas->totalDasVendasCaixa(
+                $this->idEmpresa
+            );
+        }
+
+        $this->view('relatorio/vendasPorPeriodo/tabelaVendasPorPeriodo', false,
+            compact(
+                'vendas',
+                'meiosDePagamento',
+                'totalDasVendas'
+            ));
     }
 
     public function vendasChamadaAjax()
@@ -67,14 +98,14 @@ class RelatorioController extends Controller
             $de = $this->post->data()->de;
             $ate = $this->post->data()->ate;
 
-            $idUsuario = false;
-            if ($this->post->data()->id_usuario != 'todos') {
-                $idUsuario = $this->post->data()->id_usuario;
+            $idCaixa = false;
+            if ($this->post->data()->id_caixa != 'todos') {
+                $idCaixa = $this->post->data()->id_caixa;
             }
 
             $vendas = $relatorioVendas->agrupamentoDeVendasPorPeriodo(
                 ['de' => $de, 'ate' => $ate],
-                $idUsuario,
+                $idCaixa,
                 $this->idEmpresa
             );
 
@@ -90,13 +121,13 @@ class RelatorioController extends Controller
 
             $meiosDePagamento = $relatorioVendas->totalVendidoPorMeioDePagamento(
                 ['de' => $de, 'ate' => $ate],
-                $idUsuario,
+                $idCaixa,
                 $this->idEmpresa
             );
 
             $totalDasVendas = $relatorioVendas->totalDasVendas(
                 ['de' => $de, 'ate' => $ate],
-                $idUsuario,
+                $idCaixa,
                 $this->idEmpresa
             );
         }
@@ -134,8 +165,8 @@ class RelatorioController extends Controller
         $relatorioVendas = new RelatorioVendasPorPeriodoRepository();
         $periodo = ['de' => $de, 'ate' => $ate];
 
-        $idUsuario = ($opcao == 'todos') ? false : $opcao;
-        $relatorioVendas->gerarRelatioDeVendasPorPeriodoXls($periodo, $idUsuario, $this->idEmpresa);
+        $idCaixa = ($opcao == 'todos') ? false : $opcao;
+        $relatorioVendas->gerarRelatioDeVendasPorPeriodoXls($periodo, $idCaixa, $this->idEmpresa);
     }
 
     public function gerarPDF($de, $ate, $opcao = false)
@@ -146,16 +177,16 @@ class RelatorioController extends Controller
         $relatorioVendas = new RelatorioVendasPorPeriodoRepository();
         $periodo = ['de' => $de, 'ate' => $ate];
 
-        $idUsuario = ($opcao == 'todos') ? false : $opcao;
+        $caixa = ($opcao == 'todos') ? false : $opcao;
         $relatorioVendas->gerarRelatioDeVendasPorPeriodoPDF(
             $periodo,
-            $idUsuario,
+            $caixa,
             $this->idEmpresa,
             $empresa
         );
     }
 
-    public function gerarPdfDeUmaVenda($codigoVenda)
+    public function gerarPedidoDeUmaVenda($codigoVenda)
     {
         $relatorioVendas = new RelatorioVendasPorPeriodoRepository();
         $vendas = $relatorioVendas->itensDaVenda(
@@ -171,8 +202,26 @@ class RelatorioController extends Controller
         $empresa = new Empresa();
         $empresa = $empresa->find($this->idEmpresa);
 
-        $relatorioPdfDeUmaVenda = new RelatorioPdfDeUmaVenda();
-        $relatorioPdfDeUmaVenda->setNomeEmpresa($empresa->nome);
-        $relatorioPdfDeUmaVenda->gerarPDF($vendas, $detalhesDePagamentoItensDaVenda);
+        $imprimirPedido = new ImprimirPedido();
+        $imprimirPedido->imprimirPedido($vendas, $detalhesDePagamentoItensDaVenda);
+    }
+
+    public function gerarPedidoDaUltimaVenda()
+    {
+        $relatorioVendas = new RelatorioVendasPorPeriodoRepository();
+        $vendas = $relatorioVendas->itensDaUltimaVenda(
+            $this->idEmpresa
+        );
+
+        $detalhesDePagamentoItensDaVenda = $relatorioVendas->detalhesDePagamentoItensDaVenda(
+            $this->idEmpresa,
+            $vendas[0]->codigoVenda
+        );
+
+        $empresa = new Empresa();
+        $empresa = $empresa->find($this->idEmpresa);
+
+        $imprimirPedido = new ImprimirPedido();
+        $imprimirPedido->imprimirPedido($vendas, $detalhesDePagamentoItensDaVenda);
     }
 }

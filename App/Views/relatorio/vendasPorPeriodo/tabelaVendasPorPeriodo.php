@@ -94,7 +94,7 @@
     <div class="text-center">
         <i class="fas fa-sad-tear" style="font-size:40px;opacity:0.70"></i>
         <br><br>
-        <h6 style="opacity:0.70">Vendas não encontradas!</h6>
+        <h6 style="opacity:0.70">Pedidos não encontradas!</h6>
     </div>
 <?php endif; ?>
 
@@ -102,7 +102,7 @@
 <?php Modal::start([
     'id' => 'modalItensDaVenda',
     'width' => 'modal-lg',
-    'title' => '<i class="fas fa-cart-arrow-down"></i> Itens da venda'
+    'title' => '<i class="fas fa-cart-arrow-down"></i> Itens do Pedido'
 ]); ?>
     <div id="modalConteudo" class="div-itens-da-venda"></div>
 <?php Modal::stop(); ?>

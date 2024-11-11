@@ -1,5 +1,5 @@
 
-<script src="public\js\quagga.min.js"></script>
+<script src="<?php echo BASEURL . '/' . "public\js\quagga.min.js" ?>"></script>
 <script>
     Quagga.init({
         inputStream: {

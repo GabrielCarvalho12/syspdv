@@ -128,18 +128,16 @@ $configPdv = $configPdv->configPdv(Session::get('idEmpresa'));
     <div class="sidebar" data-color="black" data-active-color="danger">
 
         <div class="logo">
-            <a href="<?php echo BASEURL; ?>/pdvDiferencial" class="simple-text logo-normal">
+            <a href="<?php echo BASEURL; ?>/home" class="simple-text logo-normal">
           <span style="color:#00cc66;">&nbsp;&nbsp;&nbsp;
             <?php if (getenv('APPLICATION_NAME')): ?>
                 <?php echo getenv('APPLICATION_NAME'); ?>
             <?php else: ?>
-                <img style="width: 30%;" src="<?php echo BASEURL; ?>/public/imagem/perfil_usuarios/ponto-de-venda.png" alt=""><wbr>
+                <img style="width: 30%;" src="<?php echo BASEURL; ?>/public/img/ponto-de-venda.png" alt=""><wbr>
                 <p style="">Syspdv</p>
             <?php endif; ?>
 
           </span>
-                <!--<span>Zig</span>
-                <span>Money</span>-->
             </a>
         </div>
 

@@ -52,17 +52,17 @@
         </span>
         <?php if ($detalhesDePagamentoItensDaVenda->id_meio_pagamento == 1):?>
             <span class="span-badge">
-                Recebido: R$ <?php echo real($detalhesDePagamentoItensDaVenda->valor_recebido);?>
+                À receber: R$ <?php echo real($detalhesDePagamentoItensDaVenda->valor_recebido);?>
             </span>
             <span class="span-badge">
                 Troco: R$ <?php echo real($detalhesDePagamentoItensDaVenda->troco);?>
             </span>
         <?php endif;?>
 
-        <a style="margin-top:6px" href="<?php echo BASEURL; ?>/relatorio/gerarPdfDeUmaVenda/<?php echo in64($detalhesDePagamentoItensDaVenda->codigo_venda)?>"
+        <a style="margin-top:6px" href="<?php echo BASEURL; ?>/relatorio/gerarPedidoDeUmaVenda/<?php echo in64($detalhesDePagamentoItensDaVenda->codigo_venda)?>"
         target="_blank"  id="imprimir-nota" style="opacity:0.80"
         class="hidden-when-print btn btn-sm btn-light" title="Gerar PDF desta venda.">
-            <i class="fas fa-cloud-download-alt"></i> PDF
+            <i class="fas fa-cloud-download-alt"></i> Imprimir Pedido
         </a>
     </div>
 
@@ -129,7 +129,7 @@
 
                                 <button class="dropdown-item" href="#"
                                 onclick="modalAtivarEdesativarVenda('<?php echo $venda->idVenda; ?>')">
-                                    <i class="fas fa-window-close"></i> Excluir esta Venda
+                                    <i class="fas fa-window-close"></i> Excluir este Pedido
                                 </button>
 
                                 <!--<a class="dropdown-item" href="#">

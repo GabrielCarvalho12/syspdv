@@ -28,7 +28,7 @@ class ProdutoController extends Controller
         parent::__construct();
         $this->layout = 'default';
 
-        $path = filter_var(getenv('SHARED_HOST'), FILTER_VALIDATE_BOOLEAN) ? 'imagem/produtos/' : 'public/imagem/produtos/';
+        $path = /* filter_var(getenv('SHARED_HOST'), FILTER_VALIDATE_BOOLEAN) ? */ 'imagem/produtos/' /* : 'public/imagem/produtos/' */;
         $this->diretorioImagemProdutoPadrao = $path;
 
         $this->post = new Post();
@@ -81,7 +81,7 @@ class ProdutoController extends Controller
                     return $this->get->redirectTo("produto");
                 }
 
-                $dados['imagem'] = filter_var(getenv('SHARED_HOST'), FILTER_VALIDATE_BOOLEAN) ? "public/{$retornoImagem}" : $retornoImagem;
+                $dados['imagem'] = /* filter_var(getenv('SHARED_HOST'), FILTER_VALIDATE_BOOLEAN) ? */ "public/{$retornoImagem}" /* : $retornoImagem */;
             }
 
             try {
@@ -148,7 +148,7 @@ class ProdutoController extends Controller
                     return $this->get->redirectTo("produto");
                 }
 
-                $dados['imagem'] = filter_var(getenv('SHARED_HOST'), FILTER_VALIDATE_BOOLEAN) ? "public/{$retornoImagem}" : $retornoImagem;
+                $dados['imagem'] = /* filter_var(getenv('SHARED_HOST'), FILTER_VALIDATE_BOOLEAN) ? */ "public/{$retornoImagem}" /* : $retornoImagem */;
             }
 
             try {
@@ -184,7 +184,7 @@ class ProdutoController extends Controller
     }
 
     public function pesquisarProdutoPorCodigoDeBarras(string $codigo = null)
-    {
+    {      
         $codigo = $codigo? utf8_encode(out64($codigo)): null;
 
         $produto = new Produto();
