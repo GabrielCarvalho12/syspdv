@@ -34,10 +34,10 @@ APP_DISPLAY_ERRORS=true
 TIMEZONE=America/Sao_Paulo
 HTTPS=false
 
-HOST_NAME=localhost
-HOST_USERNAME=root
-HOST_PASSWORD=zig
-HOST_DBNAME=zig
+DB_NAME=localhost
+DB_USERNAME=root
+DB_PASSWORD=
+DB_DBNAME=zig
 
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
@@ -47,11 +47,6 @@ MAIL_PASSWORD=
 CONTAINER_NAME_API=api_zig
 PORT_API=8098
 
-PORT_DB=3306
-MYSQL_ROOT_PASSWORD=zig
-MYSQL_DATABASE=zig
-MYSQL_USER=zig
-MYSQL_PASSWORD=zig
 ```
 
 > Você precisa do composer instalado em sua máquina!
