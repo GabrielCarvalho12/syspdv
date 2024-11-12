@@ -63,7 +63,7 @@ class PdvDiferencialController extends Controller
 
     public function saveVendasViaSession()
     {
-        if (!isset($_SESSION['venda']) ||empty($_SESSION['venda'])) {
+        if (!isset($_SESSION['venda']) || empty($_SESSION['venda'])) {
             return;
         }
 
@@ -71,16 +71,22 @@ class PdvDiferencialController extends Controller
         $meioDePagamento = $this->post->data()->id_meio_pagamento;
         $dataCompensacao = '0000-00-00';
 
-        /**
-         * Gera um código unico de venda que será usado em todos os registros desse Loop
-        */
+        // Gera um código unico de venda que será usado em todos os registros desse Loop
         $codigoVenda = uniqid(rand(), true).date('s').date('d.m.Y');
 
         $valorRecebido = formataValorMoedaParaGravacao($this->post->data()->valor_recebido);
         $troco = formataValorMoedaParaGravacao($this->post->data()->troco);
         $caixaAberto = $this->caixaAberto();
-
+        $observacao = '';
+        // Agora percorra os produtos na requisição, incluindo a observação
         foreach ($_SESSION['venda'] as $produto) {
+            
+            foreach ($this->post->data()->observacao as $obs){
+                if($obs['id'] == $produto['id']){
+                    $observacao = $obs['observacao'];
+                }         
+            }     
+
             $dados = [
                 'id_usuario' => $this->idUsuario,
                 'id_meio_pagamento' => $meioDePagamento,
@@ -91,10 +97,11 @@ class PdvDiferencialController extends Controller
                 'quantidade' => $produto['quantidade'],
                 'valor' => $produto['total'],
                 'codigo_venda' => $codigoVenda,
-                'caixa_id' => $caixaAberto->id
+                'caixa_id' => $caixaAberto->id,
+                'observacao' => $observacao, // Insere a observação
             ];
 
-            if ( ! empty($valorRecebido) && ! empty($troco)) {
+            if (!empty($valorRecebido) && !empty($troco)) {
                 $dados['valor_recebido'] = $valorRecebido;
                 $dados['troco'] = $troco;
             }
@@ -108,7 +115,6 @@ class PdvDiferencialController extends Controller
                 $produto->decrementaQuantidadeProduto((int) $dados['id_produto'], (int) $dados['quantidade']);
 
                 unset($_SESSION['venda']);
-
             } catch (\Exception $e) {
                 dd($e->getMessage());
             }
@@ -116,6 +122,7 @@ class PdvDiferencialController extends Controller
 
         echo json_encode(['status' => $status]);
     }
+
 
     public function colocarProdutosNaMesa($idProduto)
     {

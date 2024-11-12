@@ -29,6 +29,9 @@ class ImprimirPedido
             $printer -> text("|...Produto...|...Qtd...|...Preço...|...Total...|\n");
             foreach ($dadosVenda as $venda){
                 $printer -> text("|...".stringAbreviation($venda->produtoNome, 15, '...')."...|...".$venda->quantidade."...|...R$ ". real($venda->valor)."...|...R$ ".real($venda->preco)."...|\n");
+                $printer -> setEmphasis(true);
+                $printer -> text("Obs.: ". $venda->observacao ."\n");
+                $printer -> setEmphasis(false);          
             };
             $printer -> feed();
 

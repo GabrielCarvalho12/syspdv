@@ -213,14 +213,14 @@ class RelatorioVendasPorPeriodoRepository
 			DATE_FORMAT(vendas.created_at, '%d/%m/%Y') AS data,
             meios_pagamentos.legenda, usuarios.id, usuarios.nome AS nomeUsuario, usuarios.imagem,
             vendas.preco, vendas.quantidade, vendas.data_compensacao,
-            produtos.id AS idProduto, produtos.nome AS nomeProduto
+            produtos.id AS idProduto, produtos.nome AS nomeProduto, vendas.observacao
             FROM vendas INNER JOIN usuarios
             ON vendas.id_usuario = usuarios.id
             INNER JOIN meios_pagamentos ON vendas.id_meio_pagamento = meios_pagamentos.id
             LEFT JOIN produtos ON vendas.id_produto = produtos.id
-            WHERE vendas.id_empresa = {$idEmpresa}
-            AND vendas.deleted_at IS NULL
-            ORDER BY vendas.created_at DESC LIMIT 1;");
+            INNER JOIN (SELECT codigo_venda FROM vendas WHERE id = (SELECT MAX(id) FROM vendas)) AS ultima_venda ON vendas.codigo_venda = ultima_venda.codigo_venda
+            WHERE vendas.id_empresa = 1
+            AND vendas.deleted_at IS NULL;");
 
         return $query;
     }

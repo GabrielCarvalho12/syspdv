@@ -66,6 +66,7 @@ function obterProdutosDaMesa() {
                 t += "<td>" + value.produto + "</td>";
                 t += "<td class='hidden-when-mobile'>" + real(value.preco) + "</td>";
                 t += "<td>" + '<input id="input-' + value.id + '" type="number" class="campo-quantidade" value="' + value.quantidade + '" onchange="alterarAquantidadeDeUmProdutoNaMesa(' + value.id + ', this.value, $(this))">' + "</td>";
+                t += "<td>" + '<input id="obs-' + value.id + '" type="text">' + "</td>";
                 t += "<td class='pegarTotal'>" + real(value.total) + "</td>";
                 t += "<td>" + '<button class="btn-sm btn-link" onclick="retirarProdutoDaMesa(' + value.id + ', this)"><i class="fas fa-times" style="color:#cc0000;font-size:18px"></i></button>' + "</td>";
                 t += "</tr>";
@@ -87,42 +88,37 @@ function VerificarProdutosDaMesa(id) {
         $.each(produtos, function (index, value) {
             if (value.id == id) {
                 let produtoInput = document.getElementById("input-" + id);
-                
-                // Verifica se o campo de quantidade existe no DOM
-                if (produtoInput) {
-                    // Incrementa a quantidade
-                    let quantidade = ++produtoInput.value;
 
-                    if (quantidade > 0) {
-                        var rotaAlterar = getDomain() + "/pdvDiferencial/alterarAquantidadeDeUmProdutoNaMesa/" + id + "/" + quantidade;
-                        
-                        $.get(rotaAlterar, function (data, status) {
-                            var obj = JSON.parse(data);
+                // Incrementa a quantidade
+                let quantidade = ++produtoInput.value;
 
-                            // Verifica a quantidade no estoque
-                            if (quantidade > obj.unidades) {
-                                var legendaUnidade = (obj.unidades > 1) ? 'unidades' : 'unidade';
-                                modalValidacao('Aplicando', 'Este Produto tem apenas ' + obj.unidades + ' ' + legendaUnidade + ' em estoque.');
-                                quantidade = obj.unidades;
-                                
-                                // Atualiza a quantidade no input para o máximo permitido
-                                produtoInput.value = quantidade;
-                            }
+                if (quantidade > 0) {
+                    var rotaAlterar = getDomain() + "/pdvDiferencial/alterarAquantidadeDeUmProdutoNaMesa/" + id + "/" + quantidade;
 
-                            // Atualiza o total do produto
-                            let totalCell = document.querySelector(".pegarTotal");
-                            if (totalCell) {
-                                totalCell.textContent = real(value.preco * quantidade);
-                            }
+                    $.get(rotaAlterar, function (data, status) {
+                        var obj = JSON.parse(data);
 
-                            // Recalcula o valor total dos produtos na mesa e o troco
-                            obterValorTotalDosProdutosNaMesa();
-                            calcularTroco();
-                            setTimeout(modalValidacaoClose, 1000);
-                        });
-                    }
-                } else {
-                    console.warn("Produto com ID 'input-" + id + "' não encontrado no DOM.");
+                        // Verifica a quantidade no estoque
+                        if (quantidade > obj.unidades) {
+                            var legendaUnidade = (obj.unidades > 1) ? 'unidades' : 'unidade';
+                            modalValidacao('Aplicando', 'Este Produto tem apenas ' + obj.unidades + ' ' + legendaUnidade + ' em estoque.');
+                            quantidade = obj.unidades;
+
+                            // Atualiza a quantidade no input para o máximo permitido
+                            produtoInput.value = quantidade;
+                        }
+
+                        // Atualiza o total do produto
+                        let totalCell = document.querySelector(".pegarTotal");
+                        if (totalCell) {
+                            totalCell.textContent = real(value.preco * quantidade);
+                        }
+
+                        // Recalcula o valor total dos produtos na mesa e o troco
+                        obterValorTotalDosProdutosNaMesa();
+                        calcularTroco();
+                        setTimeout(modalValidacaoClose, 1000);
+                    });
                 }
             }
         });
@@ -146,6 +142,7 @@ function obterOultimoProdutoColocadoNaMesa() {
             t += "<td>" + value.produto + "</td>";
             t += "<td class='hidden-when-mobile'>" + real(value.preco) + "</td>";
             t += "<td>" + '<input id="input-' + value.id + '" type="number" class="campo-quantidade" value="' + value.quantidade + '" onchange="alterarAquantidadeDeUmProdutoNaMesa(' + value.id + ', this.value, $(this))">' + "</td>";
+            t += "<td>" + '<input id="obs-' + value.id + '" type="text">' + "</td>";
             t += "<td class='pegarTotal'>" + real(value.total) + "</td>";
             t += "<td>" + '<button class="btn-sm btn-link" onclick="retirarProdutoDaMesa(' + value.id + ', this)"><i class="fas fa-times" style="color:#cc0000;font-size:18px"></i></button>' + "</td>";
             t += "</tr>";
@@ -236,6 +233,23 @@ function saveVendasViaSession(token) {
 
     modalValidacao('Salvando', 'Processando...');
 
+    // Cria um array para armazenar os produtos com quantidade e observação
+    let produtosComObservacao = [];
+
+    // Itera sobre cada linha da tabela de produtos
+    $(".tabela-de-produto tbody tr").each(function() {
+        const produtoId = $(this).attr("id").split('-')[2]; // Extrai o ID do produto do ID da linha
+        const quantidade = $(this).find("input[id^='input-']").val(); // Captura a quantidade do produto
+        const observacao = $(this).find("input[id^='obs-']").val(); // Captura a observação do produto
+
+        // Adiciona o produto com quantidade e observação ao array
+        produtosComObservacao.push({
+            id: produtoId,
+            quantidade: quantidade,
+            observacao: observacao
+        });
+    });
+
     new Promise(function (resolve, reject) {
         setTimeout(resolve, 700);
     })
@@ -243,15 +257,17 @@ function saveVendasViaSession(token) {
             return new Promise(function (resolve, reject) {
                 setTimeout(modalValidacaoClose, 700);
                 setTimeout(resolve, 1000);
-            })
+            });
         })
         .then(function () {
+            debugger;
             const payload = {
                 'id_meio_pagamento': meioPagamento,
                 'data_compensacao': dataCompensacao,
                 'valor_recebido': valorRecebido,
                 'troco': usd(troco),
-                '_token': token
+                '_token': token,
+                'observacao': produtosComObservacao // Adiciona os produtos com quantidade e observação ao payload
             };
 
             $.post(rota, payload, function (result) {
@@ -264,10 +280,9 @@ function saveVendasViaSession(token) {
                     pesquisarProdutoPorNome(false);
                     imprimirPedido();
                     modalValidacao('Venda', 'Pedido realizada com sucesso!');
-
                 }
-            })
-        })
+            });
+        });
 }
 
 /*Se não tiver podutos selecionados, mostra uma mensagem*/
@@ -423,12 +438,5 @@ function fecharCaixa() {
 
 function imprimirPedido() {
     var rota = getDomain() + "/relatorio/gerarPedidoDaUltimaVenda/"
-    $.get(rota, function (result) {
-        var response = JSON.parse(result);
-            if (response) {
-                return true;
-            } else {
-                return false;
-            }
-    })
+    $.get(rota, function (result) {})
 }

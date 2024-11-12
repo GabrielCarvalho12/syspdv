@@ -280,6 +280,7 @@
                     <th>Produto</th>
                     <th class="hidden-when-mobile">Preço</th>
                     <th>QTD</th>
+                    <th>Observação</th>
                     <th>Total</th>
                     <th>Ação</th>
                 </tr>
