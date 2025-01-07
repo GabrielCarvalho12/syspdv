@@ -67,6 +67,12 @@ class PdvDiferencialController extends Controller
             return;
         }
 
+        $statusCaixa = $this->obterStatusCaixa();
+        if ($statusCaixa === 'fechado') {
+            echo json_encode(['caixa_fechado' => true]);
+            exit;
+        }
+
         $status = false;
         $meioDePagamento = $this->post->data()->id_meio_pagamento;
         $dataCompensacao = '0000-00-00';
@@ -250,6 +256,14 @@ class PdvDiferencialController extends Controller
         $status = (isset($result->status) && $result->status) ? $result->status : 'fechado';
 
         echo json_encode(['status' => $status]);
+    }
+
+    public function obterStatusCaixa()
+    {
+        $caixa = new Caixa();
+        $result = $caixa->verificarStatusCaixa();
+
+        return (isset($result->status) && $result->status) ? $result->status : 'fechado';
     }
 
     public function caixaAberto()

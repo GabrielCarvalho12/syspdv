@@ -226,7 +226,7 @@ function saveVendasViaSession(token) {
     var troco = $("#input_troco").val();
 
     if (meioPagamento == "selecione") {
-        modalValidacao('Ops.', 'Selecione um meio de Pagamento.');
+        modalValidacao('Aviso', 'Selecione um meio de Pagamento.');
         $("#button-confirmar-venda").prop('disabled', false);
         return false;
     }
@@ -251,16 +251,16 @@ function saveVendasViaSession(token) {
     });
 
     new Promise(function (resolve, reject) {
-        setTimeout(resolve, 700);
+        setTimeout(resolve, 300);
     })
         .then(function () {
             return new Promise(function (resolve, reject) {
-                setTimeout(modalValidacaoClose, 700);
+                setTimeout(modalValidacaoClose, 300);
                 setTimeout(resolve, 1000);
             });
         })
         .then(function () {
-            debugger;
+
             const payload = {
                 'id_meio_pagamento': meioPagamento,
                 'data_compensacao': dataCompensacao,
@@ -271,7 +271,12 @@ function saveVendasViaSession(token) {
             };
 
             $.post(rota, payload, function (result) {
+                
                 var status = result ? JSON.parse(result) : null;
+                if (status.caixa_fechado) {
+                    modalValidacao('Aviso', 'O caixa está fechado. Abra o caixa para realizar uma venda.');
+                    setTimeout(modalValidacaoClose, 3000)
+                }
                 if (status && status.status) {
                     $(".tabela-de-produto tbody").empty();
                     verificaSeTemProdutosNaMesa(1);
