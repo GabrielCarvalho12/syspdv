@@ -2,7 +2,7 @@
 
 namespace App\Services\RelatorioPDFService;
 use Exception;
-require __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '../../../../vendor/autoload.php';
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 
