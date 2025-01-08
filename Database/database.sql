@@ -265,6 +265,7 @@ CREATE TABLE IF NOT EXISTS `vendas` (
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `caixa_id` BIGINT,
+  `observacao` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_vendas_meios_de_pagamento` (`id_meio_pagamento`),
   KEY `FK_vendas_usuarios` (`id_usuario`),
